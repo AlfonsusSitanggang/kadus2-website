@@ -1,28 +1,29 @@
-import { NextResponse } from 'next/server';
-import { Octokit } from '@octokit/rest';
-import matter from 'gray-matter';
+import { NextResponse } from "next/server";
+import { Octokit } from "@octokit/rest";
+import matter from "gray-matter";
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN
+  auth: process.env.GITHUB_TOKEN,
 });
 
 const owner = process.env.GITHUB_OWNER;
 const repo = process.env.GITHUB_REPO;
-const articlesJsonPath = 'data/json/articles.json';
-const mdFolderPath = 'data/md';
+const articlesJsonPath = "data/json/articles.json";
+const mdFolderPath = "data/md";
 
 export async function POST(request) {
   // Double-check authentication (belt and suspenders approach)
-  const { verifyRequestAuth } = await import('@/lib/auth');
+  const { verifyRequestAuth } = await import("@/lib/auth");
   if (!verifyRequestAuth(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { title, description, content, slug, category } = await request.json();
+  const { title, description, content, slug, category, thumbnail } =
+    await request.json();
 
   // Validate slug
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    return NextResponse.json({ error: 'Invalid slug format' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid slug format" }, { status: 400 });
   }
 
   const path = `data/md/${slug}.md`;
@@ -35,7 +36,10 @@ export async function POST(request) {
         repo,
         path,
       });
-      return NextResponse.json({ error: 'Article with this slug already exists' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Article with this slug already exists" },
+        { status: 400 },
+      );
     } catch (error) {
       if (error.status !== 404) {
         throw error;
@@ -47,6 +51,7 @@ export async function POST(request) {
       title,
       description,
       date: new Date().toISOString(),
+      thumbnail: thumbnail || null,
     };
 
     // Add category if provided
@@ -61,19 +66,21 @@ export async function POST(request) {
       repo,
       path,
       message: `Create new article: ${title}`,
-      content: Buffer.from(fileContent).toString('base64'),
+      content: Buffer.from(fileContent).toString("base64"),
     });
 
     // Sync articles
     await syncArticles();
 
-    return NextResponse.json({ message: 'Article created successfully' });
+    return NextResponse.json({ message: "Article created successfully" });
   } catch (error) {
-    console.error('Error creating article:', error);
-    return NextResponse.json({ error: 'Failed to create article' }, { status: 500 });
+    console.error("Error creating article:", error);
+    return NextResponse.json(
+      { error: "Failed to create article" },
+      { status: 500 },
+    );
   }
 }
-
 
 async function syncArticles() {
   try {
@@ -84,37 +91,40 @@ async function syncArticles() {
       path: mdFolderPath,
     });
 
-    const mdFiles = files.filter(file => file.name.endsWith('.md'));
+    const mdFiles = files.filter((file) => file.name.endsWith(".md"));
 
-    const articles = await Promise.all(mdFiles.map(async file => {
-      const { data } = await octokit.repos.getContent({
-        owner,
-        repo,
-        path: file.path,
-      });
+    const articles = await Promise.all(
+      mdFiles.map(async (file) => {
+        const { data } = await octokit.repos.getContent({
+          owner,
+          repo,
+          path: file.path,
+        });
 
-      const content = Buffer.from(data.content, 'base64').toString('utf8');
-      const { data: frontMatter, content: articleContent } = matter(content);
+        const content = Buffer.from(data.content, "base64").toString("utf8");
+        const { data: frontMatter, content: articleContent } = matter(content);
 
-      // Fetch the last commit for this file
-      const { data: commits } = await octokit.repos.listCommits({
-        owner,
-        repo,
-        path: file.path,
-        per_page: 1
-      });
+        // Fetch the last commit for this file
+        const { data: commits } = await octokit.repos.listCommits({
+          owner,
+          repo,
+          path: file.path,
+          per_page: 1,
+        });
 
-      const lastModified = commits[0]?.commit.committer.date || data.sha;
+        const lastModified = commits[0]?.commit.committer.date || data.sha;
 
-      return {
-        title: frontMatter.title,
-        description: frontMatter.description,
-        date: frontMatter.date,
-        category: frontMatter.category || null,
-        lastModified: lastModified,
-        path: file.path,
-      };
-    }));
+        return {
+          title: frontMatter.title,
+          description: frontMatter.description,
+          date: frontMatter.date,
+          category: frontMatter.category || null,
+          thumbnail: frontMatter.thumbnail || null,
+          lastModified: lastModified,
+          path: file.path,
+        };
+      }),
+    );
 
     // Update articles.json
     const { data: currentFile } = await octokit.repos.getContent({
@@ -127,13 +137,14 @@ async function syncArticles() {
       owner,
       repo,
       path: articlesJsonPath,
-      message: 'Sync articles',
-      content: Buffer.from(JSON.stringify(articles, null, 2)).toString('base64'),
+      message: "Sync articles",
+      content: Buffer.from(JSON.stringify(articles, null, 2)).toString(
+        "base64",
+      ),
       sha: currentFile.sha,
     });
-
   } catch (error) {
-    console.error('Error syncing articles:', error);
+    console.error("Error syncing articles:", error);
     throw error;
   }
 }
