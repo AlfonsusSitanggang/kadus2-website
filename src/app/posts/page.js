@@ -1,19 +1,22 @@
-import ArticleList from '@/components/ArticleList'
+import ArticleList from '@/components/ArticleList';
 import { getSortedPostsData } from '@/lib/posts';
 
 export const metadata = {
-  title: 'Articles',
-  description: 'Read our latest articles on web development, GitHub tips, and best practices.',
+  title: 'Berita Kadus 2',
+  description: 'Informasi dan berita terbaru dari Kadus 2 Desa Kecemen.',
 };
 
-export default function Articles() {
-  const allPostsData = getSortedPostsData();
+export default async function Articles() {
+  const allPostsData = await getSortedPostsData();
 
+  console.log('BERITA DARI GITHUB:', allPostsData);
 
   return (
-    <div className="container mx-auto py-12">
-      <ArticleList articles={allPostsData} showMoreLink={false} />
+    <div className="container mx-auto py-12 px-4">
+      <ArticleList
+        articles={allPostsData}
+        showMoreLink={false}
+      />
     </div>
-  )
+  );
 }
-

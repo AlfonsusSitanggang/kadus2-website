@@ -1,104 +1,78 @@
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
-import { remark } from 'remark'
-import html from 'remark-html'
+import { Octokit } from '@octokit/rest';
+import matter from 'gray-matter';
+import { remark } from 'remark';
+import html from 'remark-html';
 
-const postsDirectory = path.join(process.cwd(), 'data', 'md')
+const octokit = new Octokit({
+  auth: process.env.GITHUB_TOKEN,
+});
 
-export function getSortedPostsData() {
-  // Read articles.json to check for deleted items
-  const articlesJsonPath = path.join(process.cwd(), 'data', 'json', 'articles.json')
-  let articlesIndex = []
+const owner = process.env.GITHUB_OWNER;
+const repo = process.env.GITHUB_REPO;
+
+const articlesJsonPath = 'data/json/articles.json';
+const mdFolderPath = 'data/md';
+
+export async function getSortedPostsData() {
   try {
-    const articlesJson = fs.readFileSync(articlesJsonPath, 'utf8')
-    articlesIndex = JSON.parse(articlesJson)
+    const { data } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path: articlesJsonPath,
+    });
+
+    const content = Buffer
+      .from(data.content, 'base64')
+      .toString('utf8');
+
+    const articles = JSON.parse(content);
+
+    return articles
+      .filter(article => !article.deleted)
+      .map(article => ({
+        id: article.path
+          .replace('data/md/', '')
+          .replace(/\.md$/, ''),
+        title: article.title,
+        description: article.description,
+        date: article.date,
+        category: article.category || null,
+        thumbnail: article.thumbnail || null,
+      }))
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
   } catch (error) {
-    console.error('Error reading articles.json:', error)
+    console.error('Error fetching posts from GitHub:', error);
+    return [];
   }
-
-  // Get file names under /data/md
-  const fileNames = fs.readdirSync(postsDirectory)
-  const allPostsData = fileNames.map((fileName) => {
-    // Remove ".md" from file name to get id
-    const id = fileName.replace(/\.md$/, '')
-
-    // Read markdown file as string
-    const fullPath = path.join(postsDirectory, fileName)
-    const fileContents = fs.readFileSync(fullPath, 'utf8')
-
-    // Use gray-matter to parse the post metadata section
-    const matterResult = matter(fileContents)
-
-    // Check if this article is deleted
-    const articlePath = `data/md/${fileName}`
-    const articleInIndex = articlesIndex.find(a => a.path === articlePath)
-    const isDeleted = articleInIndex?.deleted === true
-
-    // Combine the data with the id
-    return {
-      id,
-      title: matterResult.data.title,
-      description: matterResult.data.description,
-      date: matterResult.data.date,
-      category: matterResult.data.category,
-      deleted: isDeleted,
-    }
-  })
-
-  // Filter out deleted posts and sort by date
-  return allPostsData
-    .filter(post => !post.deleted)
-    .sort((a, b) => {
-      if (a.date < b.date) {
-        return 1
-      } else {
-        return -1
-      }
-    })
 }
 
 export async function getPostData(slug) {
-  const fullPath = path.join(postsDirectory, `${slug}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
+  const filePath = `${mdFolderPath}/${slug}.md`;
 
-  // Use gray-matter to parse the post metadata section
+  const { data } = await octokit.repos.getContent({
+    owner,
+    repo,
+    path: filePath,
+  });
+
+  const fileContents = Buffer
+    .from(data.content, 'base64')
+    .toString('utf8');
+
   const matterResult = matter(fileContents);
 
-  // Use remark to convert markdown into HTML string
   const processedContent = await remark()
     .use(html)
     .process(matterResult.content);
-  const contentHtml = processedContent.toString();
 
-  // Combine the data with the id and contentHtml
   return {
     slug,
-    contentHtml,
+    contentHtml: processedContent.toString(),
     title: matterResult.data.title,
     description: matterResult.data.description,
     date: matterResult.data.date,
-    // ... any other fields you want to include
+    category: matterResult.data.category || null,
+    thumbnail: matterResult.data.thumbnail || null,
   };
-}
-
-export async function getPostData2(id) {
-  const fullPath = path.join(postsDirectory, `${id}.md`)
-  const fileContents = fs.readFileSync(fullPath, 'utf8')
-
-  // Use gray-matter to parse the post metadata section
-  const matterResult = matter(fileContents)
-
-  // Use remark to convert markdown into HTML string
-  const processedContent = await remark()
-    .use(html)
-    .process(matterResult.content)
-  const contentHtml = processedContent.toString()
-
-  // Combine the data with the id and contentHtml
-  return {
-    id,
-    contentHtml,
-    ...matterResult.data
-  }
 }
