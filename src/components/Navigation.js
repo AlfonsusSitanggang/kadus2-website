@@ -13,7 +13,7 @@ import { i18n, getLocaleFromPath } from '@/lib/i18n-config'
 const navItems = [
   { path: '/', label: 'Home' },
   { path: '/resources', label: 'Resources' },
-  { path: '/posts', label: 'Articles' },
+  { path: '/berita', label: 'Berita' },
 ]
 
 export function Navigation() {

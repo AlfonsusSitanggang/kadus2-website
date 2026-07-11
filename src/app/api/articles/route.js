@@ -1,22 +1,22 @@
-import { NextResponse } from 'next/server';
-import { Octokit } from '@octokit/rest';
-import matter from 'gray-matter';
+import { NextResponse } from "next/server";
+import { Octokit } from "@octokit/rest";
+import matter from "gray-matter";
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN
+  auth: process.env.GITHUB_TOKEN,
 });
 
 const owner = process.env.GITHUB_OWNER;
 const repo = process.env.GITHUB_REPO;
-const articlesJsonPath = 'data/json/articles.json';
-const mdFolderPath = 'data/md';
+const articlesJsonPath = "data/json/articles.json";
+const mdFolderPath = "data/md";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const sync = searchParams.get('sync');
-  const path = searchParams.get('path');
-  const category = searchParams.get('category');
-  const includeDeleted = searchParams.get('includeDeleted') === 'true';
+  const sync = searchParams.get("sync");
+  const path = searchParams.get("path");
+  const category = searchParams.get("category");
+  const includeDeleted = searchParams.get("includeDeleted") === "true";
 
   try {
     if (path) {
@@ -28,7 +28,7 @@ export async function GET(request) {
           path: decodeURIComponent(path),
         });
 
-        const content = Buffer.from(data.content, 'base64').toString('utf8');
+        const content = Buffer.from(data.content, "base64").toString("utf8");
         const { data: frontMatter, content: articleContent } = matter(content);
 
         return NextResponse.json({
@@ -37,10 +37,13 @@ export async function GET(request) {
           path: data.path,
         });
       } catch (error) {
-        console.error('Error fetching article:', error);
-        return NextResponse.json({ error: 'Failed to fetch article' }, { status: 500 });
+        console.error("Error fetching article:", error);
+        return NextResponse.json(
+          { error: "Failed to fetch article" },
+          { status: 500 },
+        );
       }
-    } else if (sync === 'true') {
+    } else if (sync === "true") {
       await syncArticles();
     }
 
@@ -50,31 +53,34 @@ export async function GET(request) {
       path: articlesJsonPath,
     });
 
-    const content = Buffer.from(data.content, 'base64').toString('utf8');
+    const content = Buffer.from(data.content, "base64").toString("utf8");
     let articles = JSON.parse(content);
 
     // Filter out deleted articles unless explicitly requested
     if (!includeDeleted) {
-      articles = articles.filter(article => !article.deleted);
+      articles = articles.filter((article) => !article.deleted);
     }
 
     // Filter by category if specified
     if (category) {
-      articles = articles.filter(article => article.category === category);
+      articles = articles.filter((article) => article.category === category);
     }
 
     return NextResponse.json(articles);
   } catch (error) {
-    console.error('Error fetching articles:', error);
-    return NextResponse.json({ error: 'Failed to fetch articles' }, { status: 500 });
+    console.error("Error fetching articles:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch articles" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request) {
   // Double-check authentication (belt and suspenders approach)
-  const { verifyRequestAuth } = await import('@/lib/auth');
+  const { verifyRequestAuth } = await import("@/lib/auth");
   if (!verifyRequestAuth(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { article } = await request.json();
@@ -86,10 +92,13 @@ export async function POST(request) {
     // Sync articles
     await syncArticles();
 
-    return NextResponse.json({ message: 'Article updated successfully' });
+    return NextResponse.json({ message: "Article updated successfully" });
   } catch (error) {
-    console.error('Error updating article:', error);
-    return NextResponse.json({ error: 'Failed to update article' }, { status: 500 });
+    console.error("Error updating article:", error);
+    return NextResponse.json(
+      { error: "Failed to update article" },
+      { status: 500 },
+    );
   }
 }
 
@@ -102,37 +111,39 @@ async function syncArticles() {
       path: mdFolderPath,
     });
 
-    const mdFiles = files.filter(file => file.name.endsWith('.md'));
+    const mdFiles = files.filter((file) => file.name.endsWith(".md"));
 
-    const articles = await Promise.all(mdFiles.map(async file => {
-      const { data } = await octokit.repos.getContent({
-        owner,
-        repo,
-        path: file.path,
-      });
+    const articles = await Promise.all(
+      mdFiles.map(async (file) => {
+        const { data } = await octokit.repos.getContent({
+          owner,
+          repo,
+          path: file.path,
+        });
 
-      const content = Buffer.from(data.content, 'base64').toString('utf8');
-      const { data: frontMatter, content: articleContent } = matter(content);
+        const content = Buffer.from(data.content, "base64").toString("utf8");
+        const { data: frontMatter, content: articleContent } = matter(content);
 
-      // Fetch the last commit for this file
-      const { data: commits } = await octokit.repos.listCommits({
-        owner,
-        repo,
-        path: file.path,
-        per_page: 1
-      });
+        // Fetch the last commit for this file
+        const { data: commits } = await octokit.repos.listCommits({
+          owner,
+          repo,
+          path: file.path,
+          per_page: 1,
+        });
 
-      const lastModified = commits[0]?.commit.committer.date || data.sha;
+        const lastModified = commits[0]?.commit.committer.date || data.sha;
 
-      return {
-        title: frontMatter.title,
-        description: frontMatter.description,
-        date: frontMatter.date,
-        category: frontMatter.category || null,
-        lastModified: lastModified,
-        path: file.path,
-      };
-    }));
+        return {
+          title: frontMatter.title,
+          description: frontMatter.description,
+          date: frontMatter.date,
+          category: frontMatter.category || null,
+          lastModified: lastModified,
+          path: file.path,
+        };
+      }),
+    );
 
     // Update articles.json
     const { data: currentFile } = await octokit.repos.getContent({
@@ -145,29 +156,30 @@ async function syncArticles() {
       owner,
       repo,
       path: articlesJsonPath,
-      message: 'Sync articles',
-      content: Buffer.from(JSON.stringify(articles, null, 2)).toString('base64'),
+      message: "Sync articles",
+      content: Buffer.from(JSON.stringify(articles, null, 2)).toString(
+        "base64",
+      ),
       sha: currentFile.sha,
     });
-
   } catch (error) {
-    console.error('Error syncing articles:', error);
+    console.error("Error syncing articles:", error);
     throw error;
   }
 }
 
 // Soft delete (mark as deleted)
 export async function DELETE(request) {
-  const { verifyRequestAuth } = await import('@/lib/auth');
+  const { verifyRequestAuth } = await import("@/lib/auth");
   if (!verifyRequestAuth(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
-  const path = searchParams.get('path');
+  const path = searchParams.get("path");
 
   if (!path) {
-    return NextResponse.json({ error: 'Path is required' }, { status: 400 });
+    return NextResponse.json({ error: "Path is required" }, { status: 400 });
   }
 
   try {
@@ -178,14 +190,14 @@ export async function DELETE(request) {
       path: articlesJsonPath,
     });
 
-    const content = Buffer.from(currentFile.content, 'base64').toString('utf8');
+    const content = Buffer.from(currentFile.content, "base64").toString("utf8");
     let articles = JSON.parse(content);
 
     // Find and mark article as deleted
-    articles = articles.map(article =>
+    articles = articles.map((article) =>
       article.path === path
         ? { ...article, deleted: true, deletedAt: new Date().toISOString() }
-        : article
+        : article,
     );
 
     // Update articles.json
@@ -194,28 +206,36 @@ export async function DELETE(request) {
       repo,
       path: articlesJsonPath,
       message: `Soft delete article: ${path}`,
-      content: Buffer.from(JSON.stringify(articles, null, 2)).toString('base64'),
+      content: Buffer.from(JSON.stringify(articles, null, 2)).toString(
+        "base64",
+      ),
       sha: currentFile.sha,
     });
 
-    return NextResponse.json({ message: 'Article moved to trash' });
+    return NextResponse.json({ message: "Article moved to trash" });
   } catch (error) {
-    console.error('Error deleting article:', error);
-    return NextResponse.json({ error: 'Failed to delete article' }, { status: 500 });
+    console.error("Error deleting article:", error);
+    return NextResponse.json(
+      { error: "Failed to delete article" },
+      { status: 500 },
+    );
   }
 }
 
 // Restore or permanently delete
 export async function PATCH(request) {
-  const { verifyRequestAuth } = await import('@/lib/auth');
+  const { verifyRequestAuth } = await import("@/lib/auth");
   if (!verifyRequestAuth(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { path, action } = await request.json();
 
   if (!path || !action) {
-    return NextResponse.json({ error: 'Path and action are required' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Path and action are required" },
+      { status: 400 },
+    );
   }
 
   try {
@@ -226,15 +246,15 @@ export async function PATCH(request) {
       path: articlesJsonPath,
     });
 
-    const content = Buffer.from(currentFile.content, 'base64').toString('utf8');
+    const content = Buffer.from(currentFile.content, "base64").toString("utf8");
     let articles = JSON.parse(content);
 
-    if (action === 'restore') {
+    if (action === "restore") {
       // Restore article
-      articles = articles.map(article =>
+      articles = articles.map((article) =>
         article.path === path
           ? { ...article, deleted: false, deletedAt: undefined }
-          : article
+          : article,
       );
 
       await octokit.repos.createOrUpdateFileContents({
@@ -242,15 +262,16 @@ export async function PATCH(request) {
         repo,
         path: articlesJsonPath,
         message: `Restore article: ${path}`,
-        content: Buffer.from(JSON.stringify(articles, null, 2)).toString('base64'),
+        content: Buffer.from(JSON.stringify(articles, null, 2)).toString(
+          "base64",
+        ),
         sha: currentFile.sha,
       });
 
-      return NextResponse.json({ message: 'Article restored' });
-
-    } else if (action === 'permanentDelete') {
+      return NextResponse.json({ message: "Article restored" });
+    } else if (action === "permanentDelete") {
       // Permanently delete: remove from articles.json and delete MD file
-      articles = articles.filter(article => article.path !== path);
+      articles = articles.filter((article) => article.path !== path);
 
       // Delete MD file
       const { data: mdFile } = await octokit.repos.getContent({
@@ -273,17 +294,19 @@ export async function PATCH(request) {
         repo,
         path: articlesJsonPath,
         message: `Remove article from index: ${path}`,
-        content: Buffer.from(JSON.stringify(articles, null, 2)).toString('base64'),
+        content: Buffer.from(JSON.stringify(articles, null, 2)).toString(
+          "base64",
+        ),
         sha: currentFile.sha,
       });
 
-      return NextResponse.json({ message: 'Article permanently deleted' });
+      return NextResponse.json({ message: "Article permanently deleted" });
     }
 
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
-    console.error('Error in PATCH:', error);
-    return NextResponse.json({ error: 'Operation failed' }, { status: 500 });
+    console.error("Error in PATCH:", error);
+    return NextResponse.json({ error: "Operation failed" }, { status: 500 });
   }
 }
 
@@ -295,30 +318,43 @@ async function updateMdFile(article) {
       path: article.path,
     });
 
-    const currentContent = Buffer.from(currentFile.content, 'base64').toString('utf8');
-    const { data: frontMatter, content: articleContent } = matter(currentContent);
+    const currentContent = Buffer.from(currentFile.content, "base64").toString(
+      "utf8",
+    );
+    const { data: frontMatter, content: articleContent } =
+      matter(currentContent);
 
     const updatedFrontMatter = {
       ...frontMatter,
       title: article.title,
       description: article.description,
-      category: article.category !== undefined ? article.category : frontMatter.category,
+      category:
+        article.category !== undefined
+          ? article.category
+          : frontMatter.category,
+      thumbnail:
+        article.thumbnail !== undefined
+          ? article.thumbnail
+          : frontMatter.thumbnail,
       lastModified: new Date().toISOString(),
     };
+    
 
-    const updatedContent = matter.stringify(article.content, updatedFrontMatter);
+    const updatedContent = matter.stringify(
+      article.content,
+      updatedFrontMatter,
+    );
 
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
       path: article.path,
       message: `Update article: ${article.title}`,
-      content: Buffer.from(updatedContent).toString('base64'),
+      content: Buffer.from(updatedContent).toString("base64"),
       sha: currentFile.sha,
     });
-
   } catch (error) {
-    console.error('Error updating MD file:', error);
+    console.error("Error updating MD file:", error);
     throw error;
   }
 }

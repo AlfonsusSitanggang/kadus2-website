@@ -122,8 +122,8 @@ export default function AdminPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
       <div className="mb-4 flex gap-2">
-        <Link href="/admin/articles">
-          <Button>Manage Articles</Button>
+        <Link href="/admin/berita">
+          <Button>Kelola Berita</Button>
         </Link>
         <Link href="/admin/trash">
           <Button variant="outline">

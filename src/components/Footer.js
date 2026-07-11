@@ -26,8 +26,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/posts" className="text-base text-gray-500 hover:text-gray-900">
-                  Articles
+                <Link href="/berita" className="text-base text-gray-500 hover:text-gray-900">
+                  Berita
                 </Link>
               </li>
             </ul>

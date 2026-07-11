@@ -22,12 +22,22 @@ export default async function Post({ params }) {
           Home
         </Link>
         <ChevronRight className="mx-2" size={16} />
-        <Link href="/posts" className="hover:text-blue-600">
-          Articles
+        <Link href="/berita" className="hover:text-blue-600">
+          Berita
         </Link>
         <ChevronRight className="mx-2" size={16} />
         <span className="text-gray-900">{postData.title}</span>
       </nav>
+
+      {postData.thumbnail && (
+        <div className="mb-8">
+          <img
+            src={postData.thumbnail}
+            alt={postData.title}
+            className="w-full max-h-[500px] object-cover rounded-xl"
+          />
+        </div>
+      )}
 
       {/* Thumbnail / Main Image */}
       {postData.thumbnail && (
@@ -58,14 +68,14 @@ export default async function Post({ params }) {
         dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
       />
 
-      {/* Back to articles link */}
+      {/* Kembali ke daftar berita link */}
       <div className="mt-12">
         <Link
-          href="/posts"
+          href="/berita"
           className="text-blue-600 hover:text-blue-800 transition-colors inline-flex items-center gap-2"
         >
           <ArrowLeft size={20} />
-          Back to articles
+          Kembali ke daftar berita
         </Link>
       </div>
     </article>

@@ -78,7 +78,7 @@ export default function AdminArticlesPage() {
         </div>
         <div>
           <Button onClick={handleSync} className="mr-2">Sync Articles</Button>
-          <Link href="/admin/articles/create">
+          <Link href="/admin/berita/create">
             <Button>Create New Article</Button>
           </Link>
         </div>
@@ -102,7 +102,7 @@ export default function AdminArticlesPage() {
               <TableCell>{new Date(article.lastModified).toLocaleString()}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  <Link href={`/admin/articles/edit?path=${encodeURIComponent(article.path)}`}>
+                  <Link href={`/admin/berita/edit?path=${encodeURIComponent(article.path)}`}>
                     <Button size="sm">Edit</Button>
                   </Link>
                   <Button
