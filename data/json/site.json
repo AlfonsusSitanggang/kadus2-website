@@ -1,10 +1,29 @@
 {
-  "name": "GitBase12",
-  "title": "GitBase - Open Source Dynamic Website CMS Without Database",
-  "description": "A Next.js site with Tailwind & Shadcn/UI, using GitHub API for content management. No database needed for dynamic updates.",
-  "slogan": "Open Source Dynamic Website CMS Without Database",
-  "intro": "GitBase is a dynamic, database-free website built with Next.js, Tailwind CSS, and Shadcn/UI, featuring a content management system powered by the GitHub API for seamless updates and administration.",
-  "url": "https://gitbase.app",
-  "author": "GitBase",
-  "footerText": "GitBase. All rights reserved."
+  "siteName": "Website Kadus 2",
+  "shortName": "Kadus 2",
+
+  "title": "Website Resmi Kadus 2 | Desa Kecemen",
+  "description": "Portal informasi resmi Kadus 2 Desa Kecemen, Kecamatan Manisrenggo, Kabupaten Klaten.",
+
+  "tagline": "Portal Informasi Kadus 2",
+
+  "heroTitle": "Selamat Datang di Website Kadus 2",
+
+  "heroSubtitle": "Portal informasi, berita kegiatan masyarakat, UMKM, potensi desa, statistik, dan peta digital Kadus 2.",
+
+  "village": "Desa Kecemen",
+  "district": "Kecamatan Manisrenggo",
+  "regency": "Kabupaten Klaten",
+  "province": "Jawa Tengah",
+
+  "address": "",
+  "email": "",
+  "phone": "",
+  "whatsapp": "",
+
+  "logo": "/logo.png",
+  "favicon": "/favicon.ico",
+
+  "copyright": "© 2026 Kadus 2",
+  "developer": "KKN UPN Veteran Yogyakarta 2026"
 }

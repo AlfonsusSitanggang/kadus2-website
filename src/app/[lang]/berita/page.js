@@ -1,28 +1,28 @@
 import ArticleList from '@/components/ArticleList'
 import { getSortedPostsData } from '@/lib/posts'
 import { getDictionary } from '@/lib/get-dictionary'
-import { i18n } from '@/lib/i18n-config'
-
-export async function generateStaticParams() {
-  return i18n.locales.map((locale) => ({ lang: locale }))
-}
 
 export async function generateMetadata({ params }) {
   const dict = await getDictionary(params.lang)
 
   return {
-    title: dict.articles.title,
-    description: 'Read our latest articles on web development, GitHub tips, and best practices.',
+    title: 'Berita Kadus 2',
+    description:
+      'Informasi dan berita terbaru dari Kadus 2, Desa Kecemen, Kecamatan Manisrenggo, Kabupaten Klaten.',
   }
 }
 
-export default async function Articles({ params }) {
-  const dict = await getDictionary(params.lang)
-  const allPostsData = getSortedPostsData()
+export default async function BeritaPage({ params }) {
+  await getDictionary(params.lang)
+
+  const allPostsData = await getSortedPostsData()
 
   return (
     <div className="container mx-auto py-12">
-      <ArticleList articles={allPostsData} showMoreLink={false} />
+      <ArticleList
+        articles={Array.isArray(allPostsData) ? allPostsData : []}
+        showMoreLink={false}
+      />
     </div>
   )
 }

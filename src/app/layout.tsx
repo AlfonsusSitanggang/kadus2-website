@@ -1,21 +1,21 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
-import { Layout } from '@/components/Layout'
-import { Metadata } from 'next'
+import "./globals.css";
+import { Inter } from "next/font/google";
+import { Layout } from "@/components/Layout";
+import { Metadata } from "next";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
-
-export const metadata: Metadata = {
+export const metadata = {
   title: {
-    default: 'GitBase',
-    template: '%s | GitBase'
+    default: "Kadus 2 Kecemen",
+    template: "%s | Kadus 2 Kecemen",
   },
-  description: 'Open source dynamic website without database, built with Next.js and GitHub API',
-}
+  description:
+    "Website informasi dan publikasi Kadus 2, Kecemen, Manisrenggo, Klaten, Jawa Tengah.",
+};
 
 interface RootLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
@@ -25,5 +25,5 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Layout>{children}</Layout>
       </body>
     </html>
-  )
+  );
 }
