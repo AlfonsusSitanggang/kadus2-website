@@ -1,113 +1,134 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+
 import {
   Card,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import CategoryBadge from './CategoryBadge'
-import { getLocaleFromPath, addLocaleToPath } from '@/lib/i18n-config'
+} from '@/components/ui/card'
 
-export default function ArticleList({ articles, showMoreLink = true }) {
+import CategoryBadge from './CategoryBadge'
+
+export default function ArticleList({
+  articles = [],
+  showMoreLink = true,
+}) {
   const [categories, setCategories] = useState([])
-  const pathname = usePathname()
-  const currentLocale = getLocaleFromPath(pathname)
 
   useEffect(() => {
     fetch('/api/categories?type=article')
-      .then(res => res.json())
-      .then(data => setCategories(data))
-      .catch(err => console.error('Error fetching categories:', err))
+      .then((res) => res.json())
+      .then((data) => {
+        setCategories(
+          Array.isArray(data) ? data : [],
+        )
+      })
+      .catch((error) => {
+        console.error(
+          'Error fetching categories:',
+          error,
+        )
+
+        setCategories([])
+      })
   }, [])
 
-  const getLocalizedPath = (path) => {
-    return addLocaleToPath(path, currentLocale)
-  }
+  const safeArticles = Array.isArray(articles)
+    ? articles
+    : []
 
   return (
     <section>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold tracking-tighter">
-          Berita Terbaru
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h2 className="text-3xl font-bold tracking-tight">
+          Berita
         </h2>
 
         {showMoreLink && (
           <Link
-            href={getLocalizedPath('/berita')}
-            className="text-blue-600 hover:text-blue-800 transition-colors"
+            href="/berita"
+            className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-800"
           >
             Lihat semua berita →
           </Link>
         )}
       </div>
 
-      {articles.length === 0 ? (
-        <p className="text-gray-500">
-          Belum ada berita.
-        </p>
+      {safeArticles.length === 0 ? (
+        <div className="rounded-lg border border-dashed p-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Belum ada berita yang dipublikasikan.
+          </p>
+        </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map(({
-            id,
-            title,
-            description,
-            category,
-            thumbnail,
-            date
-          }) => (
-            <Card
-              key={id}
-              className="overflow-hidden flex flex-col"
-            >
-              {thumbnail && (
-                <Link href={getLocalizedPath(`/berita/${id}`)}>
-                  <img
-                    src={thumbnail}
-                    alt={title}
-                    className="w-full h-52 object-cover"
-                  />
-                </Link>
-              )}
-
-              <CardHeader className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  {category && (
-                    <CategoryBadge
-                      category={category}
-                      categories={categories}
+          {safeArticles.map(
+            ({
+              id,
+              title,
+              description,
+              category,
+              thumbnail,
+              date,
+            }) => (
+              <Card
+                key={id}
+                className="overflow-hidden transition-shadow hover:shadow-md"
+              >
+                {thumbnail && (
+                  <div className="aspect-video w-full overflow-hidden bg-muted">
+                    <img
+                      src={thumbnail}
+                      alt={title || 'Gambar berita'}
+                      className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                     />
-                  )}
-                </div>
-
-                {date && (
-                  <p className="text-sm text-gray-500">
-                    {new Date(date).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                  </p>
+                  </div>
                 )}
 
-                <Link
-                  href={getLocalizedPath(`/berita/${id}`)}
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  <CardTitle className="mt-2">
-                    {title}
-                  </CardTitle>
-                </Link>
+                <CardHeader>
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {category && (
+                      <CategoryBadge
+                        category={category}
+                        categories={categories}
+                      />
+                    )}
 
-                <CardDescription className="mt-2">
-                  {description}
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
+                    {date && (
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(date).toLocaleDateString(
+                          'id-ID',
+                          {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          },
+                        )}
+                      </span>
+                    )}
+                  </div>
+
+                  <Link
+                    href={`/berita/${id}`}
+                    className="group"
+                  >
+                    <CardTitle className="line-clamp-2 transition-colors group-hover:text-blue-600">
+                      {title}
+                    </CardTitle>
+                  </Link>
+
+                  {description && (
+                    <CardDescription className="line-clamp-3">
+                      {description}
+                    </CardDescription>
+                  )}
+                </CardHeader>
+              </Card>
+            ),
+          )}
         </div>
       )}
     </section>

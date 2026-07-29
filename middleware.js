@@ -1,117 +1,148 @@
-import { NextResponse } from 'next/server';
-import { i18n } from './src/lib/i18n-config';
+import { NextResponse } from 'next/server'
 
-// Simple token verification for Edge Runtime
-// Note: This is a basic check. For production, consider using jose library.
+/**
+ * Pemeriksaan struktur token sederhana untuk Edge Runtime.
+ *
+ * Catatan:
+ * Verifikasi JWT utama tetap dilakukan pada API melalui src/lib/auth.js.
+ * Middleware digunakan sebagai lapisan awal untuk melindungi halaman admin.
+ */
 function verifyTokenSimple(token) {
-  if (!token) return false;
+  if (!token) {
+    return false
+  }
 
   try {
-    // Basic JWT structure check
-    const parts = token.split('.');
-    if (parts.length !== 3) return false;
+    const parts = token.split('.')
 
-    // Decode payload (without verification for Edge Runtime compatibility)
-    const payload = JSON.parse(
-      Buffer.from(parts[1], 'base64').toString('utf8')
-    );
-
-    // Check expiration
-    if (payload.exp && payload.exp * 1000 < Date.now()) {
-      return false;
+    if (parts.length !== 3) {
+      return false
     }
 
-    // Check if authenticated
-    return payload.authenticated === true;
+    const payloadBase64 = parts[1]
+      .replace(/-/g, '+')
+      .replace(/_/g, '/')
+
+    const payload = JSON.parse(
+      atob(payloadBase64),
+    )
+
+    if (
+      payload.exp &&
+      payload.exp * 1000 < Date.now()
+    ) {
+      return false
+    }
+
+    return payload.authenticated === true
   } catch (error) {
-    return false;
+    console.error(
+      '[Middleware] Invalid token structure:',
+      error,
+    )
+
+    return false
   }
 }
 
 export function middleware(request) {
-  const pathname = request.nextUrl.pathname;
+  const pathname = request.nextUrl.pathname
 
-  console.log('[Middleware] Processing:', pathname);
+  /**
+   * Lindungi halaman admin.
+   */
+  if (pathname.startsWith('/admin')) {
+    const token =
+      request.cookies.get('auth_token')?.value
 
-  // Handle /en redirect to / (301 permanent redirect)
-  if (pathname.startsWith('/en')) {
-    const newPath = pathname.replace(/^\/en/, '') || '/';
-    const searchParams = request.nextUrl.searchParams.toString();
-    const redirectUrl = new URL(
-      `${newPath}${searchParams ? `?${searchParams}` : ''}`,
-      request.url
-    );
-    return NextResponse.redirect(redirectUrl, { status: 301 });
-  }
-
-  // Extract locale from pathname
-  const pathnameHasLocale = i18n.locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  );
-
-  // Get the path without locale
-  let pathWithoutLocale = pathname;
-  if (pathnameHasLocale) {
-    const segments = pathname.split('/');
-    pathWithoutLocale = '/' + segments.slice(2).join('/');
-  }
-
-  console.log('[Middleware] Path without locale:', pathWithoutLocale);
-
-  // Check authentication for /admin routes (locale-aware)
-  // This prevents any admin page from rendering before authentication
-  if (pathWithoutLocale.startsWith('/admin')) {
-    console.log('[Middleware] Admin route detected');
-    const token = request.cookies.get('auth_token')?.value;
-    console.log('[Middleware] Token exists:', !!token);
-    const isLoggedIn = token && verifyTokenSimple(token);
-    console.log('[Middleware] Is logged in:', isLoggedIn);
+    const isLoggedIn = verifyTokenSimple(token)
 
     if (!isLoggedIn) {
-      console.log('[Middleware] Redirecting to /login');
-      // Always redirect to root /login (admin pages don't need locale)
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(
+        new URL('/login', request.url),
+      )
     }
   }
 
-  // Check authentication for protected API routes
+  /**
+   * Daftar API yang memerlukan autentikasi.
+   */
   const protectedApiRoutes = [
     '/api/articles/create',
     '/api/articles',
     '/api/resources',
     '/api/categories',
-  ];
+    '/api/media/upload',
+  ]
 
-  const isProtectedApi = protectedApiRoutes.some(route => {
-    if (route === '/api/articles' || route === '/api/resources') {
-      // Only protect POST/PUT/DELETE/PATCH methods, allow GET
-      return pathWithoutLocale === route && !['GET', 'HEAD'].includes(request.method);
-    }
-    if (route === '/api/categories') {
-      // Only protect POST/PUT/DELETE/PATCH methods for categories
-      return pathWithoutLocale.startsWith(route) && !['GET', 'HEAD'].includes(request.method);
-    }
-    return pathWithoutLocale.startsWith(route);
-  });
+  const isProtectedApi =
+    protectedApiRoutes.some((route) => {
+      /**
+       * Articles:
+       * GET publik.
+       * Method perubahan data dilindungi.
+       */
+      if (route === '/api/articles') {
+        return (
+          pathname === route &&
+          !['GET', 'HEAD'].includes(request.method)
+        )
+      }
+
+      /**
+       * Resources:
+       * GET publik.
+       * Method perubahan data dilindungi.
+       */
+      if (route === '/api/resources') {
+        return (
+          pathname === route &&
+          !['GET', 'HEAD'].includes(request.method)
+        )
+      }
+
+      /**
+       * Categories:
+       * GET publik.
+       * Method perubahan data dilindungi.
+       */
+      if (route === '/api/categories') {
+        return (
+          pathname.startsWith(route) &&
+          !['GET', 'HEAD'].includes(request.method)
+        )
+      }
+
+      /**
+       * Route lainnya selalu dilindungi.
+       */
+      return pathname.startsWith(route)
+    })
 
   if (isProtectedApi) {
-    const token = request.cookies.get('auth_token')?.value;
-    const isLoggedIn = token && verifyTokenSimple(token);
+    const token =
+      request.cookies.get('auth_token')?.value
+
+    const isLoggedIn = verifyTokenSimple(token)
 
     if (!isLoggedIn) {
       return NextResponse.json(
-        { error: 'Unauthorized: Authentication required' },
-        { status: 401 }
-      );
+        {
+          error:
+            'Unauthorized: Authentication required',
+        },
+        {
+          status: 401,
+        },
+      )
     }
   }
 
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    // Match all paths except static files and api routes that don't need locale handling
-    '/((?!_next/static|_next/image|favicon.ico|.*\\..*).)*',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
-};
+}
