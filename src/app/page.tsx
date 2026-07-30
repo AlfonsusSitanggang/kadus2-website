@@ -9,9 +9,6 @@ import {
   Store,
 } from "lucide-react";
 
-import { getSortedPostsData } from "@/lib/posts";
-import ArticleList from "@/components/ArticleList";
-
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -65,9 +62,7 @@ const menuItems = [
   },
 ];
 
-export default async function Home() {
-  const allPostsData = (await getSortedPostsData()).slice(0, 3);
-
+export default function Home() {
   return (
     <main>
       {/* Hero */}
@@ -97,13 +92,6 @@ export default async function Home() {
             >
               Jelajahi Profil
               <ArrowRight size={18} />
-            </Link>
-
-            <Link
-              href="/berita"
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
-            >
-              Lihat Berita
             </Link>
           </div>
         </div>
@@ -240,13 +228,6 @@ export default async function Home() {
               </Link>
             );
           })}
-        </div>
-      </section>
-
-      {/* Berita Terbaru */}
-      <section className="border-t bg-gray-50">
-        <div className="container mx-auto px-4 py-16 md:py-20">
-          <ArticleList articles={allPostsData} showMoreLink={true} />
         </div>
       </section>
     </main>

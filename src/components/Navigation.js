@@ -199,22 +199,13 @@ export function Navigation() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          {!isLoading &&
-            (isLoggedIn ? (
-              <div className="hidden items-center gap-2 md:flex">
-                <Link href="/admin">
-                  <Button variant="ghost">Admin</Button>
-                </Link>
-
-                <Button onClick={handleLogout} variant="outline">
-                  Keluar
-                </Button>
-              </div>
-            ) : (
-              <Link href="/login" className="hidden md:block">
-                <Button variant="outline">Admin</Button>
-              </Link>
-            ))}
+          {!isLoading && isLoggedIn && (
+            <div className="hidden items-center gap-2 md:flex">
+              <Button onClick={handleLogout} variant="outline">
+                Keluar
+              </Button>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <Button
@@ -298,32 +289,19 @@ export function Navigation() {
               );
             })}
 
-            <div className="mt-4 border-t pt-4">
-              {!isLoading &&
-                (isLoggedIn ? (
-                  <div className="space-y-2">
-                    <Link href="/admin" className="block">
-                      <Button variant="outline" className="w-full">
-                        Dashboard Admin
-                      </Button>
-                    </Link>
-
-                    <Button
-                      onClick={handleLogout}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      Keluar
-                    </Button>
-                  </div>
-                ) : (
-                  <Link href="/login" className="block">
-                    <Button variant="outline" className="w-full">
-                      Login Admin
-                    </Button>
-                  </Link>
-                ))}
-            </div>
+            {!isLoading && isLoggedIn && (
+              <div className="mt-4 border-t pt-4">
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Keluar
+                  </Button>
+                </div>
+              </div>
+            )}
           </nav>
         </div>
       )}
