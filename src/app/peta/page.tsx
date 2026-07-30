@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { maps } from "@/data/map";
 
@@ -6,15 +7,81 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { ArrowDown, Download, Eye, Map, MapPinned, School } from "lucide-react";
+import {
+  ArrowDown,
+  Download,
+  Droplets,
+  Eye,
+  HelpCircle,
+  Map,
+  MapPinned,
+  School,
+} from "lucide-react";
 
 const IMAGE_BASE_URL =
   "https://raw.githubusercontent.com/AlfonsusSitanggang/kadus2-content/main";
 
-const GITHUB_BASE_URL =
-  "https://github.com/AlfonsusSitanggang/kadus2-content/blob/main";
+// Komponen kartu peta dipakai ulang di kedua section (umum & kualitas air)
+function MapDocumentCard({
+  document,
+}: {
+  document: (typeof maps.documents)[number];
+}) {
+  const imageUrl = encodeURI(`${IMAGE_BASE_URL}/${document.image}`);
+  const pdfDownloadUrl = encodeURI(`${IMAGE_BASE_URL}/${document.pdf}`);
+
+  return (
+    <Card className="overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+      <CardContent className="p-0">
+        <div className="relative aspect-video w-full overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={document.title}
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="rounded-xl object-cover transition duration-300 hover:scale-105"
+          />
+        </div>
+
+        <div className="p-8">
+          <Badge className="mb-4">{document.category}</Badge>
+
+          <h3 className="mb-4 text-2xl font-bold">{document.title}</h3>
+
+          <p className="mb-6 leading-8 text-muted-foreground">
+            {document.description}
+          </p>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button asChild variant="default" className="gap-2">
+              <a href={imageUrl} target="_blank" rel="noopener noreferrer">
+                <Eye className="h-4 w-4" />
+                Lihat
+              </a>
+            </Button>
+
+            <Button asChild variant="outline" className="gap-2">
+              <a href={pdfDownloadUrl} download>
+                <Download className="h-4 w-4" />
+                Unduh PDF
+              </a>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function MapPage() {
+  const generalDocuments = maps.documents.filter(
+    (document) => document.category !== "Kualitas Air",
+  );
+
+  const waterQualityDocuments = maps.documents.filter(
+    (document) => document.category === "Kualitas Air",
+  );
+
   return (
     <main className="bg-background">
       {/* ====================================================== */}
@@ -47,9 +114,11 @@ export default function MapPage() {
             {maps.subtitle}
           </p>
 
-          <Button size="lg" className="mt-10 gap-2 rounded-full">
-            Lihat Peta
-            <ArrowDown className="h-5 w-5" />
+          <Button size="lg" className="mt-10 gap-2 rounded-full" asChild>
+            <a href="#dokumen-peta">
+              Lihat Peta
+              <ArrowDown className="h-5 w-5" />
+            </a>
           </Button>
         </div>
       </section>
@@ -89,10 +158,10 @@ export default function MapPage() {
       </section>
 
       {/* ====================================================== */}
-      {/* DOKUMEN PETA */}
+      {/* DOKUMEN PETA (UMUM) */}
       {/* ====================================================== */}
 
-      <section className="bg-muted/30 py-24">
+      <section id="dokumen-peta" className="bg-muted/30 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">Dokumen</Badge>
@@ -105,63 +174,93 @@ export default function MapPage() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            {maps.documents.map((document) => {
-              const imageUrl = `${IMAGE_BASE_URL}/${document.image}`;
-              const pdfViewUrl = `${GITHUB_BASE_URL}/${document.pdf}`;
-              const pdfDownloadUrl = `${IMAGE_BASE_URL}/${document.pdf}`;
-
-              return (
-                <Card
-                  key={document.id}
-                  className="overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-                >
-                  <CardContent className="p-0">
-                    <div className="relative aspect-video w-full overflow-hidden">
-                      <Image
-                        src={imageUrl}
-                        alt={document.title}
-                        fill
-                        sizes="(min-width: 768px) 50vw, 100vw"
-                        className="rounded-xl object-cover transition duration-300 hover:scale-105"
-                      />
-                    </div>
-
-                    <div className="p-8">
-                      <Badge className="mb-4">{document.category}</Badge>
-
-                      <h3 className="mb-4 text-2xl font-bold">
-                        {document.title}
-                      </h3>
-
-                      <p className="mb-6 leading-8 text-muted-foreground">
-                        {document.description}
-                      </p>
-
-                      <div className="flex flex-col gap-3 sm:flex-row">
-                        <Button asChild variant="default" className="gap-2">
-                          <a
-                            href={pdfViewUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Eye className="h-4 w-4" />
-                            Lihat
-                          </a>
-                        </Button>
-
-                        <Button asChild variant="outline" className="gap-2">
-                          <a href={pdfDownloadUrl} download>
-                            <Download className="h-4 w-4" />
-                            Unduh PDF
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {generalDocuments.map((document) => (
+              <MapDocumentCard key={document.id} document={document} />
+            ))}
           </div>
+        </div>
+      </section>
+
+      {/* ====================================================== */}
+      {/* KUALITAS AIR */}
+      {/* ====================================================== */}
+
+      <section id="kualitas-air" className="py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-16 text-center">
+            <Badge className="mb-4 gap-1">
+              <Droplets className="h-3.5 w-3.5" />
+              Kualitas Air
+            </Badge>
+
+            <h2 className="text-4xl font-bold">Peta Kualitas Air Sumur</h2>
+
+            <p className="mx-auto mt-3 max-w-3xl text-muted-foreground">
+              Hasil pengujian lapangan terhadap lima parameter kualitas air
+              sumur di Dusun II Desa Kecemen: pH, MAT (Muka Air Tanah), TDS,
+              suhu, dan EC (Electrical Conductivity). 
+              Yang dilaksanakan pada tanggal 7-8 Juli 2026 yang bertempat di RW 08 Dusun II Desa Kecemen Kecamatan Manisrenggo Kabupaten Malang Klaten Provinsi Jawa Tengah Jawa Tengah.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+            {waterQualityDocuments.map((document) => (
+              <MapDocumentCard key={document.id} document={document} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ====================================================== */}
+      {/* FAQ */}
+      {/* ====================================================== */}
+
+      <section id="faq" className="py-24">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="mb-16 text-center">
+            <Badge className="mb-4 gap-1">
+              <HelpCircle className="h-3.5 w-3.5" />
+              FAQ
+            </Badge>
+
+            <h2 className="text-4xl font-bold">{maps.faq.title}</h2>
+
+            <p className="mx-auto mt-3 max-w-3xl text-muted-foreground">
+              {maps.faq.subtitle}
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {maps.faq.items.map((item, index) => (
+              <Card key={item.question}>
+                <CardContent className="p-8">
+                  <h3 className="mb-4 flex items-start gap-3 text-xl font-semibold">
+                    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700">
+                      {index + 1}
+                    </span>
+
+                    {item.question}
+                  </h3>
+
+                  <div className="space-y-4 pl-11 leading-8 text-muted-foreground">
+                    {item.answer.split("\n\n").map((paragraph) => (
+                      <p key={paragraph.slice(0, 20)}>{paragraph}</p>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card className="mt-10 border-amber-200 bg-amber-50">
+            <CardContent className="p-8">
+              <h3 className="mb-3 font-semibold text-amber-900">
+                Catatan Keterbatasan Pengujian
+              </h3>
+
+              <p className="leading-8 text-amber-800">{maps.faq.note}</p>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -169,7 +268,7 @@ export default function MapPage() {
       {/* FASILITAS */}
       {/* ====================================================== */}
 
-      <section className="py-24">
+      <section className="bg-muted/30 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">Fasilitas</Badge>
@@ -206,7 +305,7 @@ export default function MapPage() {
       {/* LANDMARK */}
       {/* ====================================================== */}
 
-      <section className="bg-muted/30 py-24">
+      <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">Landmark</Badge>
@@ -242,7 +341,7 @@ export default function MapPage() {
       {/* INFRASTRUKTUR */}
       {/* ====================================================== */}
 
-      <section className="py-24">
+      <section className="bg-muted/30 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">Infrastruktur</Badge>
@@ -278,7 +377,7 @@ export default function MapPage() {
       {/* WILAYAH ADMINISTRASI */}
       {/* ====================================================== */}
 
-      <section className="bg-muted/30 py-24">
+      <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">Administrasi</Badge>
@@ -328,7 +427,7 @@ export default function MapPage() {
       {/* PERSEBARAN UMKM */}
       {/* ====================================================== */}
 
-      <section className="py-24">
+      <section className="bg-muted/30 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">UMKM</Badge>
@@ -364,7 +463,7 @@ export default function MapPage() {
       {/* SUMBER DATA */}
       {/* ====================================================== */}
 
-      <section className="bg-muted/30 py-24">
+      <section className="py-24">
         <div className="mx-auto max-w-5xl px-6">
           <Card>
             <CardContent className="p-10">
@@ -409,7 +508,7 @@ export default function MapPage() {
       {/* CTA */}
       {/* ====================================================== */}
 
-      <section className="pb-28">
+      <section className="bg-muted/30 pb-28 pt-24">
         <div className="mx-auto max-w-6xl px-6">
           <Card className="overflow-hidden rounded-3xl bg-emerald-700 text-white">
             <CardContent className="flex flex-col items-center px-10 py-16 text-center">
@@ -430,8 +529,8 @@ export default function MapPage() {
                 Kecemen secara lebih komprehensif.
               </p>
 
-              <Button size="lg" variant="secondary" className="mt-10">
-                Kembali ke Beranda
+              <Button size="lg" variant="secondary" className="mt-10" asChild>
+                <Link href="/">Kembali ke Beranda</Link>
               </Button>
             </CardContent>
           </Card>
