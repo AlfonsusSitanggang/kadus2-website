@@ -42,10 +42,7 @@ const navItems = [
     path: "/peta",
     label: "Peta",
   },
-  {
-    path: "/berita",
-    label: "Berita",
-  },
+  
 ];
 
 export function Navigation() {
