@@ -1,6 +1,8 @@
 import ArticleList from '@/components/ArticleList'
 import { getSortedPostsData } from '@/lib/posts'
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: 'Berita Kadus 2',
   description: 'Berita dan informasi terbaru dari Kadus 2 Desa Kecemen.',
