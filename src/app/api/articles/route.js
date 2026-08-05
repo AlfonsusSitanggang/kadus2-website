@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Octokit } from "@octokit/rest";
 import matter from "gray-matter";
+import { revalidatePath } from "next/cache";
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -92,6 +93,11 @@ export async function POST(request) {
     // Sync articles
     await syncArticles();
 
+    revalidatePath("/");
+    revalidatePath("/berita");
+    revalidatePath("/admin");
+    revalidatePath("/berita/[slug]", "page");
+
     return NextResponse.json({ message: "Article updated successfully" });
   } catch (error) {
     console.error("Error updating article:", error);
@@ -139,7 +145,8 @@ async function syncArticles() {
           description: frontMatter.description,
           date: frontMatter.date,
           category: frontMatter.category || null,
-          lastModified: lastModified,
+          thumbnail: frontMatter.thumbnail || null,
+          lastModified,
           path: file.path,
         };
       }),
@@ -212,6 +219,11 @@ export async function DELETE(request) {
       sha: currentFile.sha,
     });
 
+    revalidatePath("/");
+    revalidatePath("/berita");
+    revalidatePath("/admin");
+    revalidatePath("/berita/[slug]", "page");
+
     return NextResponse.json({ message: "Article moved to trash" });
   } catch (error) {
     console.error("Error deleting article:", error);
@@ -225,6 +237,7 @@ export async function DELETE(request) {
 // Restore or permanently delete
 export async function PATCH(request) {
   const { verifyRequestAuth } = await import("@/lib/auth");
+
   if (!verifyRequestAuth(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -249,6 +262,11 @@ export async function PATCH(request) {
     const content = Buffer.from(currentFile.content, "base64").toString("utf8");
     let articles = JSON.parse(content);
 
+    revalidatePath("/");
+    revalidatePath("/berita");
+    revalidatePath("/admin");
+    revalidatePath("/berita/[slug]", "page");
+
     if (action === "restore") {
       // Restore article
       articles = articles.map((article) =>
@@ -267,6 +285,11 @@ export async function PATCH(request) {
         ),
         sha: currentFile.sha,
       });
+
+      revalidatePath("/");
+      revalidatePath("/berita");
+      revalidatePath("/admin");
+      revalidatePath("/berita/[slug]", "page");
 
       return NextResponse.json({ message: "Article restored" });
     } else if (action === "permanentDelete") {
@@ -300,12 +323,18 @@ export async function PATCH(request) {
         sha: currentFile.sha,
       });
 
+      revalidatePath("/");
+      revalidatePath("/berita");
+      revalidatePath("/admin");
+      revalidatePath("/berita/[slug]", "page");
+
       return NextResponse.json({ message: "Article permanently deleted" });
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
     console.error("Error in PATCH:", error);
+
     return NextResponse.json({ error: "Operation failed" }, { status: 500 });
   }
 }
@@ -338,7 +367,6 @@ async function updateMdFile(article) {
           : frontMatter.thumbnail,
       lastModified: new Date().toISOString(),
     };
-    
 
     const updatedContent = matter.stringify(
       article.content,

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert } from '@/components/ui/alert';
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert } from "@/components/ui/alert";
 
 export default function ArticleEditor() {
   const [article, setArticle] = useState({
-    title: '',
-    description: '',
-    content: '',
-    path: '',
-    category: '',
-    thumbnail: '',
+    title: "",
+    description: "",
+    content: "",
+    path: "",
+    category: "",
+    thumbnail: "",
   });
 
   const [categories, setCategories] = useState([]);
@@ -28,21 +28,21 @@ export default function ArticleEditor() {
 
   const searchParams = useSearchParams();
   const router = useRouter();
-  const path = searchParams.get('path');
+  const path = searchParams.get("path");
 
   useEffect(() => {
     if (path) {
       fetchArticle(decodeURIComponent(path));
     } else {
-      setError('Path berita tidak ditemukan.');
+      setError("Path berita tidak ditemukan.");
       setIsLoading(false);
     }
 
-    fetch('/api/categories?type=article')
+    fetch("/api/categories?type=article")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => {
-        console.error('Error fetching categories:', err);
+        console.error("Error fetching categories:", err);
       });
   }, [path]);
 
@@ -52,26 +52,26 @@ export default function ArticleEditor() {
 
     try {
       const response = await fetch(
-        `/api/articles?path=${encodeURIComponent(articlePath)}`
+        `/api/articles?path=${encodeURIComponent(articlePath)}`,
       );
 
       if (!response.ok) {
-        throw new Error('Gagal mengambil data berita.');
+        throw new Error("Gagal mengambil data berita.");
       }
 
       const data = await response.json();
 
       setArticle({
-        title: data.title || '',
-        description: data.description || '',
-        content: data.content || '',
+        title: data.title || "",
+        description: data.description || "",
+        content: data.content || "",
         path: data.path || articlePath,
-        category: data.category || '',
-        thumbnail: data.thumbnail || '',
+        category: data.category || "",
+        thumbnail: data.thumbnail || "",
       });
     } catch (error) {
-      console.error('Error fetching article:', error);
-      setError('Gagal mengambil data berita.');
+      console.error("Error fetching article:", error);
+      setError("Gagal mengambil data berita.");
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +92,7 @@ export default function ArticleEditor() {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      setError('Ukuran gambar maksimal 5 MB.');
+      setError("Ukuran gambar maksimal 5 MB.");
       return;
     }
 
@@ -115,20 +115,18 @@ export default function ArticleEditor() {
     try {
       const formData = new FormData();
 
-      formData.append('file', selectedImage);
-      formData.append('category', 'berita');
+      formData.append("file", selectedImage);
+      formData.append("category", "berita");
 
-      const response = await fetch('/api/media/upload', {
-        method: 'POST',
+      const response = await fetch("/api/media/upload", {
+        method: "POST",
         body: formData,
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || 'Gagal mengunggah gambar.'
-        );
+        throw new Error(data.error || "Gagal mengunggah gambar.");
       }
 
       return data.media.url;
@@ -139,12 +137,12 @@ export default function ArticleEditor() {
 
   const handleSave = async () => {
     if (!article.title.trim()) {
-      setError('Judul berita wajib diisi.');
+      setError("Judul berita wajib diisi.");
       return;
     }
 
     if (!article.content.trim()) {
-      setError('Isi berita wajib diisi.');
+      setError("Isi berita wajib diisi.");
       return;
     }
 
@@ -160,10 +158,10 @@ export default function ArticleEditor() {
         thumbnail: thumbnailUrl,
       };
 
-      const response = await fetch('/api/articles', {
-        method: 'POST',
+      const response = await fetch("/api/articles", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           article: updatedArticle,
@@ -173,19 +171,16 @@ export default function ArticleEditor() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || 'Gagal menyimpan perubahan berita.'
-        );
+        throw new Error(data.error || "Gagal menyimpan perubahan berita.");
       }
 
-      router.push('/admin/berita');
       router.refresh();
+      router.replace("/admin/berita");
+      
     } catch (error) {
-      console.error('Error saving article:', error);
+      console.error("Error saving article:", error);
 
-      setError(
-        error.message || 'Gagal menyimpan perubahan berita.'
-      );
+      setError(error.message || "Gagal menyimpan perubahan berita.");
     } finally {
       setIsSaving(false);
     }
@@ -198,19 +193,14 @@ export default function ArticleEditor() {
   return (
     <div className="space-y-6">
       {error && (
-        <Alert
-          variant="destructive"
-          className="mb-4"
-        >
+        <Alert variant="destructive" className="mb-4">
           {error}
         </Alert>
       )}
 
       {/* Judul */}
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Judul Berita
-        </label>
+        <label className="block text-sm font-medium mb-2">Judul Berita</label>
 
         <Input
           name="title"
@@ -257,32 +247,24 @@ export default function ArticleEditor() {
         />
 
         <p className="text-sm text-gray-500 mt-1">
-          Pilih gambar baru hanya jika ingin mengganti thumbnail.
-          Maksimal 5 MB.
+          Pilih gambar baru hanya jika ingin mengganti thumbnail. Maksimal 5 MB.
         </p>
       </div>
 
       {/* Kategori */}
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Kategori
-        </label>
+        <label className="block text-sm font-medium mb-2">Kategori</label>
 
         <select
           name="category"
-          value={article.category || ''}
+          value={article.category || ""}
           onChange={handleInputChange}
           className="w-full border rounded px-3 py-2"
         >
-          <option value="">
-            Tanpa Kategori
-          </option>
+          <option value="">Tanpa Kategori</option>
 
           {categories.map((cat) => (
-            <option
-              key={cat.id}
-              value={cat.id}
-            >
+            <option key={cat.id} value={cat.id}>
               {cat.name}
             </option>
           ))}
@@ -291,9 +273,7 @@ export default function ArticleEditor() {
 
       {/* Isi */}
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Isi Berita
-        </label>
+        <label className="block text-sm font-medium mb-2">Isi Berita</label>
 
         <Textarea
           name="content"
@@ -304,16 +284,12 @@ export default function ArticleEditor() {
         />
       </div>
 
-      <Button
-        onClick={handleSave}
-        disabled={isSaving || isUploading}
-      >
+      <Button onClick={handleSave} disabled={isSaving || isUploading}>
         {isUploading
-          ? 'Mengunggah Gambar...'
+          ? "Mengunggah Gambar..."
           : isSaving
-            ? 'Menyimpan Perubahan...'
-            : 'Simpan Perubahan'
-        }
+            ? "Menyimpan Perubahan..."
+            : "Simpan Perubahan"}
       </Button>
     </div>
   );

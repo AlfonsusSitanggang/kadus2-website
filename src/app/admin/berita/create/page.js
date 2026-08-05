@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert } from '@/components/ui/alert';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert } from "@/components/ui/alert";
 
 export default function CreateBeritaPage() {
   const [article, setArticle] = useState({
-    title: '',
-    description: '',
-    content: '',
-    slug: '',
-    category: '',
-    thumbnail: '',
+    title: "",
+    description: "",
+    content: "",
+    slug: "",
+    category: "",
+    thumbnail: "",
   });
 
   const [categories, setCategories] = useState([]);
@@ -28,11 +28,11 @@ export default function CreateBeritaPage() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/categories?type=article')
+    fetch("/api/categories?type=article")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => {
-        console.error('Error fetching categories:', err);
+        console.error("Error fetching categories:", err);
       });
   }, []);
 
@@ -52,7 +52,7 @@ export default function CreateBeritaPage() {
 
     // Validasi ukuran maksimal 5 MB
     if (file.size > 5 * 1024 * 1024) {
-      setError('Ukuran gambar maksimal 5 MB.');
+      setError("Ukuran gambar maksimal 5 MB.");
       return;
     }
 
@@ -77,20 +77,18 @@ export default function CreateBeritaPage() {
     try {
       const formData = new FormData();
 
-      formData.append('file', selectedImage);
-      formData.append('category', 'berita');
+      formData.append("file", selectedImage);
+      formData.append("category", "berita");
 
-      const response = await fetch('/api/media/upload', {
-        method: 'POST',
+      const response = await fetch("/api/media/upload", {
+        method: "POST",
         body: formData,
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || 'Gagal mengunggah gambar'
-        );
+        throw new Error(data.error || "Gagal mengunggah gambar");
       }
 
       return data.media.url;
@@ -102,17 +100,17 @@ export default function CreateBeritaPage() {
   const handleSave = async () => {
     // Validasi sederhana
     if (!article.title.trim()) {
-      setError('Judul berita wajib diisi.');
+      setError("Judul berita wajib diisi.");
       return;
     }
 
     if (!article.slug.trim()) {
-      setError('Slug berita wajib diisi.');
+      setError("Slug berita wajib diisi.");
       return;
     }
 
     if (!article.content.trim()) {
-      setError('Isi berita wajib diisi.');
+      setError("Isi berita wajib diisi.");
       return;
     }
 
@@ -124,10 +122,10 @@ export default function CreateBeritaPage() {
       const thumbnailUrl = await uploadImage();
 
       // Simpan berita
-      const response = await fetch('/api/articles/create', {
-        method: 'POST',
+      const response = await fetch("/api/articles/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...article,
@@ -138,19 +136,15 @@ export default function CreateBeritaPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || 'Gagal membuat berita'
-        );
+        throw new Error(data.error || "Gagal membuat berita");
       }
 
-      router.push('/admin/berita');
+      await router.push("/admin/berita");
       router.refresh();
     } catch (error) {
-      console.error('Error creating berita:', error);
+      console.error("Error creating berita:", error);
 
-      setError(
-        error.message || 'Terjadi kesalahan saat membuat berita.'
-      );
+      setError(error.message || "Terjadi kesalahan saat membuat berita.");
     } finally {
       setIsSaving(false);
     }
@@ -158,15 +152,10 @@ export default function CreateBeritaPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">
-        Tambah Berita Baru
-      </h1>
+      <h1 className="text-2xl font-bold mb-6">Tambah Berita Baru</h1>
 
       {error && (
-        <Alert
-          variant="destructive"
-          className="mb-4"
-        >
+        <Alert variant="destructive" className="mb-4">
           {error}
         </Alert>
       )}
@@ -174,9 +163,7 @@ export default function CreateBeritaPage() {
       <div className="space-y-6">
         {/* Judul */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Judul Berita
-          </label>
+          <label className="block text-sm font-medium mb-2">Judul Berita</label>
 
           <Input
             name="title"
@@ -202,9 +189,7 @@ export default function CreateBeritaPage() {
 
         {/* Slug */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Slug Berita
-          </label>
+          <label className="block text-sm font-medium mb-2">Slug Berita</label>
 
           <Input
             name="slug"
@@ -247,9 +232,7 @@ export default function CreateBeritaPage() {
 
         {/* Kategori */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Kategori
-          </label>
+          <label className="block text-sm font-medium mb-2">Kategori</label>
 
           <select
             name="category"
@@ -257,15 +240,10 @@ export default function CreateBeritaPage() {
             onChange={handleInputChange}
             className="w-full border rounded px-3 py-2"
           >
-            <option value="">
-              Tanpa Kategori
-            </option>
+            <option value="">Tanpa Kategori</option>
 
             {categories.map((cat) => (
-              <option
-                key={cat.id}
-                value={cat.id}
-              >
+              <option key={cat.id} value={cat.id}>
                 {cat.name}
               </option>
             ))}
@@ -274,9 +252,7 @@ export default function CreateBeritaPage() {
 
         {/* Isi Berita */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Isi Berita
-          </label>
+          <label className="block text-sm font-medium mb-2">Isi Berita</label>
 
           <Textarea
             name="content"
@@ -288,16 +264,12 @@ export default function CreateBeritaPage() {
         </div>
 
         {/* Tombol */}
-        <Button
-          onClick={handleSave}
-          disabled={isSaving || isUploading}
-        >
+        <Button onClick={handleSave} disabled={isSaving || isUploading}>
           {isUploading
-            ? 'Mengunggah Gambar...'
+            ? "Mengunggah Gambar..."
             : isSaving
-              ? 'Menyimpan Berita...'
-              : 'Tambah Berita'
-          }
+              ? "Menyimpan Berita..."
+              : "Tambah Berita"}
         </Button>
       </div>
     </div>
