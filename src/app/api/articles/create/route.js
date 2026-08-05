@@ -11,6 +11,9 @@ const repo = process.env.GITHUB_REPO;
 const articlesJsonPath = "data/json/articles.json";
 const mdFolderPath = "data/md";
 
+const owner = process.env.GITHUB_OWNER;
+const repo = process.env.GITHUB_REPO;
+
 export async function POST(request) {
   // Double-check authentication (belt and suspenders approach)
   const { verifyRequestAuth } = await import("@/lib/auth");
