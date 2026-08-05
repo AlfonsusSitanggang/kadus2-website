@@ -11,8 +11,15 @@ const repo = process.env.GITHUB_REPO;
 const articlesJsonPath = "data/json/articles.json";
 const mdFolderPath = "data/md";
 
-const owner = process.env.GITHUB_OWNER;
-const repo = process.env.GITHUB_REPO;
+console.log("OWNER:", owner);
+console.log("REPO:", repo);
+
+console.log(
+  "TOKEN:",
+  process.env.GITHUB_TOKEN
+    ? process.env.GITHUB_TOKEN.substring(0, 10) + "..."
+    : "MISSING",
+);
 
 export async function POST(request) {
   // Double-check authentication (belt and suspenders approach)
