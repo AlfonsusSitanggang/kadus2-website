@@ -42,6 +42,10 @@ const navItems = [
     path: "/peta",
     label: "Peta",
   },
+  {
+    path: "/berita",
+    label: "Berita",
+  },
   
 ];
 
