@@ -1,32 +1,59 @@
-import { Octokit } from "@octokit/rest";
 import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
-});
-
 const owner = process.env.GITHUB_OWNER;
 const repo = process.env.GITHUB_REPO;
+const token = process.env.GITHUB_TOKEN;
 
 const articlesJsonPath = "data/json/articles.json";
 const mdFolderPath = "data/md";
 
+/**
+ * Helper internal untuk melakukan request ke GitHub API 
+ * tanpa terpengaruh oleh Data Cache Next.js atau ETag GitHub.
+ */
+async function fetchGitHubContent(path) {
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github.v3+json",
+      // Bypass cache di layer HTTP & GitHub CDN
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+    },
+    // Memaksa Next.js Server Components untuk selalu memanggil API langsung
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) {
+      return null;
+    }
+    throw new Error(`GitHub API responded with status ${res.status} for path: ${path}`);
+  }
+
+  const data = await res.json();
+  
+  // Decoding data dari Base64 ke UTF-8
+  if (data && data.content) {
+    return Buffer.from(data.content, "base64").toString("utf8");
+  }
+
+  return null;
+}
+
 export async function getSortedPostsData() {
   try {
-    const { data } = await octokit.repos.getContent({
-      owner,
-      repo,
-      path: articlesJsonPath,
-    });
+    const rawContent = await fetchGitHubContent(articlesJsonPath);
 
-    const content = Buffer.from(data.content, "base64").toString("utf8");
+    if (!rawContent) {
+      return [];
+    }
 
-    const articles = JSON.parse(content);
+    const articles = JSON.parse(rawContent);
 
     if (!Array.isArray(articles)) {
       return [];
@@ -62,18 +89,13 @@ export async function getPostData(slug) {
   const filePath = `${mdFolderPath}/${slug}.md`;
 
   try {
-    const { data } = await octokit.repos.getContent({
-      owner,
-      repo,
-      path: filePath,
-    });
+    const rawContent = await fetchGitHubContent(filePath);
 
-    const fileContents = Buffer.from(
-      data.content,
-      "base64"
-    ).toString("utf8");
+    if (!rawContent) {
+      return null;
+    }
 
-    const matterResult = matter(fileContents);
+    const matterResult = matter(rawContent);
 
     const processedContent = await remark()
       .use(html)
@@ -90,7 +112,6 @@ export async function getPostData(slug) {
     };
   } catch (error) {
     console.error(`Article ${slug} not found:`, error);
-
     return null;
   }
 }

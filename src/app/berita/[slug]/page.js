@@ -5,11 +5,6 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-
-
-
-
-
 export async function generateMetadata({ params }) {
   try {
     const postData = await getPostData(params.slug);
