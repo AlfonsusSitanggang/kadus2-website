@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
           <div>
             <img
-              src="/images/profile/about.jpg"
+              src="/images/Screenshot (364).png"
               alt="Dusun II Desa Kecemen"
               className="h-[500px] w-full rounded-3xl object-cover shadow-xl"
             />

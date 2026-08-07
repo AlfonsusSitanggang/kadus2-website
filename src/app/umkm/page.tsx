@@ -88,7 +88,7 @@ export default function UmkmPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2">
           <div>
             <img
-              src="/images/umkm/introduction.jpg"
+              src="/images/hero10.webp"
               alt="UMKM Dusun II"
               className="h-[520px] w-full rounded-3xl object-cover shadow-xl"
             />
@@ -437,8 +437,8 @@ export default function UmkmPage() {
               <h2 className="mb-6 text-3xl font-bold">Informasi UMKM</h2>
 
               <p className="mx-auto max-w-3xl leading-8 text-muted-foreground">
-                Seluruh data UMKM pada halaman ini disusun berdasarkan hasil
-                pemetaan potensi Dusun II Desa Kecemen yang dilakukan dalam
+                Seluruh data UMKM pada halaman ini disusun berdasarkan hasil hasil survey
+                di Dusun II Desa Kecemen yang dilakukan dalam
                 kegiatan KKN UPN Veteran Yogyakarta Tahun 2026.
               </p>
 

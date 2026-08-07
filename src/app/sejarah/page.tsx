@@ -53,7 +53,7 @@ export default function HistoryPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2">
           <div>
             <img
-              src="/images/history/history.jpg"
+              src="/images/hero4.webp"
               alt="Sejarah Dusun II"
               className="h-[520px] w-full rounded-3xl object-cover shadow-xl"
             />
@@ -161,7 +161,7 @@ export default function HistoryPage() {
       {/* KONDISI GEOGRAFIS */}
       {/* ====================================================== */}
 
-      <section className="bg-muted/30 py-24">
+      {/* <section className="bg-muted/30 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">Kondisi Wilayah</Badge>
@@ -191,7 +191,7 @@ export default function HistoryPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ====================================================== */}
       {/* PERKEMBANGAN EKONOMI */}
