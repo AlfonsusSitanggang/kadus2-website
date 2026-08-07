@@ -2,23 +2,21 @@ import { profile } from "@/data/profile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 import { ArrowDown, MapPinned, Trees, Users, Home } from "lucide-react";
 
 export default function ProfilePage() {
   return (
     <main className="bg-background">
-      {/* ====================================================== */}
-      {/* HERO */}
-      {/* ====================================================== */}
-
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
         {/* Background */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/images/profile/hero.jpg')",
-          }}
+        <Image
+          src="/images/hero3.webp"
+          alt="Hero Kadus 2"
+          fill
+          priority
+          className="object-cover"
         />
 
         {/* Overlay */}
@@ -45,6 +43,38 @@ export default function ProfilePage() {
             Jelajahi Profil
             <ArrowDown className="h-5 w-5" />
           </Button>
+        </div>
+      </section>
+
+      {/* Video Profil */}
+      <section className="border-y bg-gray-50">
+        <div className="container mx-auto px-4 py-16">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+              Video Profil
+            </p>
+
+            <h2 className="mt-3 text-3xl font-bold text-gray-900">
+              Mengenal Kadus 2
+            </h2>
+
+            <p className="mt-4 mb-8 text-gray-600">
+              Saksikan video profil yang menampilkan gambaran wilayah, potensi,
+              serta kehidupan masyarakat Kadus 2, Desa Kecemen.
+            </p>
+
+            <div className="overflow-hidden rounded-2xl shadow-xl border bg-white">
+              <div className="aspect-video">
+                <iframe
+                  className="h-full w-full"
+                  src="https://www.youtube.com/embed/W9Pgg9_iZjo?rel=0"
+                  title="Video Profil Kadus 2"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

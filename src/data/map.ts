@@ -46,7 +46,7 @@ export const maps = {
 
       title: "Peta pH (Potential of Hydrogen)",
 
-      image: "maps/PETA PH_page-0001.jpg",
+      image: "maps/PETA PH.jpg",
 
       pdf: "maps/PETA PH.pdf",
 
@@ -61,7 +61,7 @@ export const maps = {
 
       title: "Peta MAT (Muka Air Tanah)",
 
-      image: "maps/PETA MAT_page-0001.jpg",
+      image: "maps/PETA MAT.jpg",
 
       pdf: "maps/PETA MAT.pdf",
 
@@ -76,7 +76,7 @@ export const maps = {
 
       title: "Peta TDS (Total Dissolved Solids)",
 
-      image: "maps/PETA TDS_page-0001.jpg",
+      image: "maps/PETA TDS.jpg",
 
       pdf: "maps/PETA TDS.pdf",
 
@@ -91,7 +91,7 @@ export const maps = {
 
       title: "Peta Temperatur Air Tanah",
 
-      image: "maps/PETA TEMPERATURE_page-0001.jpg",
+      image: "maps/PETA TEMPERATURE.jpg",
 
       pdf: "maps/PETA TEMPERATURE.pdf",
 
@@ -106,9 +106,9 @@ export const maps = {
 
       title: "Peta EC (Electrical Conductivity)",
 
-      image: "maps/PETA EC_page-0001.jpg",
+      image: "maps/PETA Electric Conductivity.jpg",
 
-      pdf: "maps/PETA EC.pdf",
+      pdf: "maps/PETA Electric Conductivity.pdf",
 
       description:
         "Menampilkan sebaran daya hantar listrik (EC) air tanah di wilayah Dusun II. Kedalaman muka air tanah berkisar antara 1,16–5,57 m dengan rata-rata 2,75 m (RT 22: 1,98 m; RT 23: 2,75 m; RT 24: 3,45 m), meningkat dari RT 22 menuju RT 24. Sumur dengan muka air tanah lebih dangkal berpotensi lebih besar mengalami pencemaran dari permukaan, sedangkan sumur yang lebih dalam relatif lebih terlindungi namun membutuhkan energi pemompaan lebih besar.",
@@ -219,8 +219,7 @@ export const maps = {
       },
     ],
 
-    note:
-      "Perlu diperhatikan bahwa pengujian pada penelitian ini hanya mencakup parameter pH, Total Dissolved Solids (TDS), Electrical Conductivity (EC), suhu (temperature), dan muka air tanah (MAT). Hal ini disebabkan oleh keterbatasan alat, lama waktu pengujian, dan sumber daya yang tersedia selama penelitian. Oleh karena itu, beberapa parameter penting lainnya, seperti besi (Fe), mangan (Mn), amonia (NH\u2083), hidrogen sulfida (H\u2082S), kesadahan, nitrat, serta parameter mikrobiologi seperti Total Coliform dan Escherichia coli (E. coli) belum dapat dianalisis. Meskipun demikian, hasil pengujian terhadap parameter yang diukur telah memberikan gambaran awal mengenai kondisi kualitas air sumur di lokasi penelitian. Untuk memperoleh data yang lebih representatif dan menggambarkan kondisi kualitas air secara lebih menyeluruh, diperlukan pengujian lanjutan dengan cakupan parameter yang lebih lengkap, jumlah sampel yang lebih banyak, serta periode pengamatan yang lebih panjang.",
+    note: "Perlu diperhatikan bahwa pengujian pada penelitian ini hanya mencakup parameter pH, Total Dissolved Solids (TDS), Electrical Conductivity (EC), suhu (temperature), dan muka air tanah (MAT). Hal ini disebabkan oleh keterbatasan alat, lama waktu pengujian, dan sumber daya yang tersedia selama penelitian. Oleh karena itu, beberapa parameter penting lainnya, seperti besi (Fe), mangan (Mn), amonia (NH\u2083), hidrogen sulfida (H\u2082S), kesadahan, nitrat, serta parameter mikrobiologi seperti Total Coliform dan Escherichia coli (E. coli) belum dapat dianalisis. Meskipun demikian, hasil pengujian terhadap parameter yang diukur telah memberikan gambaran awal mengenai kondisi kualitas air sumur di lokasi penelitian. Untuk memperoleh data yang lebih representatif dan menggambarkan kondisi kualitas air secara lebih menyeluruh, diperlukan pengujian lanjutan dengan cakupan parameter yang lebih lengkap, jumlah sampel yang lebih banyak, serta periode pengamatan yang lebih panjang.",
   },
 
   source: {

@@ -1,4 +1,5 @@
 import { umkm } from "@/data/umkm";
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,19 +46,21 @@ export default function UmkmPage() {
   return (
     <main className="bg-background">
       {/* ====================================================== */}
-      {/* HERO */}
+      {/* HERO SECTION (UMKM Dusun II) */}
       {/* ====================================================== */}
-
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
+        {/* Latar Belakang Gambar */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/umkm/hero.jpg')",
+            backgroundImage: "url('/images/hero5.webp')",
           }}
         />
 
+        {/* Overlay Hitam Transparan */}
         <div className="absolute inset-0 bg-black/60" />
 
+        {/* Konten Hero */}
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
           <Badge
             variant="secondary"
@@ -74,10 +77,6 @@ export default function UmkmPage() {
             {umkm.subtitle}
           </p>
 
-          <Button size="lg" className="mt-10 gap-2 rounded-full">
-            Jelajahi UMKM
-            <ArrowDown className="h-5 w-5" />
-          </Button>
         </div>
       </section>
 
@@ -152,7 +151,7 @@ export default function UmkmPage() {
       {/* UMKM UNGGULAN */}
       {/* ====================================================== */}
 
-      <section className="py-24">
+      {/* <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <Badge className="mb-4">Unggulan</Badge>
@@ -197,7 +196,7 @@ export default function UmkmPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
       {/* ====================================================== */}
       {/* DAFTAR UMKM */}
       {/* ====================================================== */}

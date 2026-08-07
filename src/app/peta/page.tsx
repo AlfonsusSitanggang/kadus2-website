@@ -85,19 +85,21 @@ export default function MapPage() {
   return (
     <main className="bg-background">
       {/* ====================================================== */}
-      {/* HERO */}
+      {/* HERO SECTION (Peta Dusun II) */}
       {/* ====================================================== */}
-
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
+        {/* Latar Belakang Gambar */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/maps/hero.jpg')",
+            backgroundImage: "url('/images/hero9.webp')", 
           }}
         />
 
+        {/* Overlay Hitam Transparan */}
         <div className="absolute inset-0 bg-black/60" />
 
+        {/* Konten Hero */}
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
           <Badge
             variant="secondary"
@@ -114,6 +116,7 @@ export default function MapPage() {
             {maps.subtitle}
           </p>
 
+          {/* Tombol dengan Anchor Link */}
           <Button size="lg" className="mt-10 gap-2 rounded-full" asChild>
             <a href="#dokumen-peta">
               Lihat Peta
@@ -131,7 +134,7 @@ export default function MapPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2">
           <div>
             <Image
-              src={`${IMAGE_BASE_URL}/maps/PETA_ADMINISTRASI_KADUS2.jpg`}
+              src="/images/hero11.webp"
               alt="Peta Dusun II"
               width={1200}
               height={900}
@@ -198,8 +201,10 @@ export default function MapPage() {
             <p className="mx-auto mt-3 max-w-3xl text-muted-foreground">
               Hasil pengujian lapangan terhadap lima parameter kualitas air
               sumur di Dusun II Desa Kecemen: pH, MAT (Muka Air Tanah), TDS,
-              suhu, dan EC (Electrical Conductivity). 
-              Yang dilaksanakan pada tanggal 7-8 Juli 2026 yang bertempat di RW 08 Dusun II Desa Kecemen Kecamatan Manisrenggo Kabupaten Malang Klaten Provinsi Jawa Tengah Jawa Tengah.
+              suhu, dan EC (Electrical Conductivity). Yang dilaksanakan pada
+              tanggal 7-8 Juli 2026 yang bertempat di RW 08 Dusun II Desa
+              Kecemen Kecamatan Manisrenggo Kabupaten Malang Klaten Provinsi
+              Jawa Tengah Jawa Tengah.
             </p>
           </div>
 

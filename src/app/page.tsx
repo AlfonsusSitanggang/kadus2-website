@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+
 import {
   ArrowRight,
   BarChart3,
@@ -20,15 +22,13 @@ export const metadata: Metadata = {
 const menuItems = [
   {
     title: "Profil Wilayah",
-    description:
-      "Mengenal gambaran umum dan kondisi wilayah Kadus 2 Kecemen.",
+    description: "Mengenal gambaran umum dan kondisi wilayah Kadus 2 Kecemen.",
     href: "/profil",
     icon: Building2,
   },
   {
     title: "Sejarah",
-    description:
-      "Menelusuri informasi dan perjalanan wilayah Kadus 2 Kecemen.",
+    description: "Menelusuri informasi dan perjalanan wilayah Kadus 2 Kecemen.",
     href: "/sejarah",
     icon: History,
   },
@@ -48,15 +48,13 @@ const menuItems = [
   },
   {
     title: "Statistik",
-    description:
-      "Informasi dan data statistik wilayah Kadus 2 Kecemen.",
+    description: "Informasi dan data statistik wilayah Kadus 2 Kecemen.",
     href: "/statistik",
     icon: BarChart3,
   },
   {
     title: "Peta Digital",
-    description:
-      "Melihat informasi pemetaan wilayah dan kajian kualitas air.",
+    description: "Melihat informasi pemetaan wilayah dan kajian kualitas air.",
     href: "/peta",
     icon: Map,
   },
@@ -66,33 +64,48 @@ export default function Home() {
   return (
     <main>
       {/* Hero */}
-      <section className="border-b bg-gray-50">
-        <div className="container mx-auto px-4 py-20 text-center md:py-28">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-gray-500">
-            Website Informasi Wilayah
-          </p>
+      <section className="relative h-[650px] overflow-hidden">
+        {/* Background Image */}
+        <Image
+          src="/images/hero1.webp"
+          alt="Kadus 2 Kecemen"
+          fill
+          priority
+          className="object-cover"
+        />
 
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-            Kadus 2 Kecemen
-          </h1>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/55" />
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">
-            Media informasi dan publikasi wilayah Kadus 2, Desa Kecemen,
-            Kecamatan Manisrenggo, Kabupaten Klaten.
-          </p>
+        {/* Content */}
+        <div className="relative z-10 flex h-full items-center justify-center">
+          <div className="container mx-auto px-4 text-center">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-gray-200">
+              Website Informasi Wilayah
+            </p>
 
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-500">
-            Mencakup wilayah RW 06 sampai RW 10 serta RT 16 sampai RT 30.
-          </p>
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+              Kadus 2 Kecemen
+            </h1>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/profil"
-              className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-700"
-            >
-              Jelajahi Profil
-              <ArrowRight size={18} />
-            </Link>
+            <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-100 md:text-lg">
+              Media informasi dan publikasi wilayah Kadus 2, Desa Kecemen,
+              Kecamatan Manisrenggo, Kabupaten Klaten.
+            </p>
+
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-300">
+              Mencakup wilayah RW 06 sampai RW 10 serta RT 16 sampai RT 30.
+            </p>
+
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/profil"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-200"
+              >
+                Jelajahi Profil
+                <ArrowRight size={18} />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -143,9 +156,7 @@ export default function Home() {
             <div className="rounded-xl border bg-white p-6">
               <p className="text-4xl font-bold text-gray-900">5</p>
 
-              <h3 className="mt-2 font-semibold text-gray-900">
-                Rukun Warga
-              </h3>
+              <h3 className="mt-2 font-semibold text-gray-900">Rukun Warga</h3>
 
               <p className="mt-2 text-sm text-gray-500">
                 RW 06 sampai dengan RW 10.

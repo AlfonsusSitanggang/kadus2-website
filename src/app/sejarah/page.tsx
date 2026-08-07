@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDays, Clock3, BookOpen, ArrowDown } from "lucide-react";
+import Image from "next/image";
 
 export default function HistoryPage() {
   return (
@@ -15,7 +16,7 @@ export default function HistoryPage() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/history/hero.jpg')",
+            backgroundImage: "url('/images/hero4.webp')",
           }}
         />
 
@@ -276,7 +277,7 @@ export default function HistoryPage() {
               </p>
             </CardContent>
           </Card>
-          
+
           <p className="mt-8 text-center text-sm text-muted-foreground italic">
             Sumber: {history.source.interview}
           </p>
@@ -307,7 +308,11 @@ export default function HistoryPage() {
                 yang lebih baik.
               </p>
 
-              <Button size="lg" variant="secondary" className="mt-10 text-emerald-900">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="mt-10 text-emerald-900"
+              >
                 Lihat Potensi Desa
               </Button>
             </CardContent>

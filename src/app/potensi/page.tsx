@@ -3,6 +3,7 @@ import { potential } from "@/data/potential";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 
 import {
   Sprout,
@@ -19,19 +20,21 @@ export default function PotentialPage() {
   return (
     <main className="bg-background">
       {/* ====================================================== */}
-      {/* HERO */}
+      {/* HERO SECTION (Potensi Dusun II) */}
       {/* ====================================================== */}
-
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
+        {/* Latar Belakang Gambar */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/potential/hero.jpg')",
+            backgroundImage: "url('/images/hero5.webp')",
           }}
         />
 
+        {/* Overlay Hitam Transparan */}
         <div className="absolute inset-0 bg-black/60" />
 
+        {/* Konten Hero */}
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
           <Badge
             variant="secondary"
@@ -63,7 +66,7 @@ export default function PotentialPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2">
           <div>
             <img
-              src="/images/potential/introduction.jpg"
+              src="/images/hero10.webp"
               alt="Potensi Dusun II"
               className="h-[520px] w-full rounded-3xl object-cover shadow-xl"
             />
@@ -153,7 +156,7 @@ export default function PotentialPage() {
           <div className="grid gap-12 lg:grid-cols-2 items-center">
             <div>
               <img
-                src="/images/potential/agriculture.jpg"
+                src="/images/hero2.webp"
                 alt="Pertanian"
                 className="h-[500px] w-full rounded-3xl object-cover shadow-xl"
               />
@@ -340,7 +343,7 @@ export default function PotentialPage() {
       {/* CTA */}
       {/* ====================================================== */}
 
-      <section className="pb-28">
+      {/* <section className="pb-28">
         <div className="mx-auto max-w-6xl px-6">
           <Card className="overflow-hidden rounded-3xl bg-emerald-700 text-white">
             <CardContent className="flex flex-col items-center px-10 py-16 text-center">
@@ -370,7 +373,7 @@ export default function PotentialPage() {
             </CardContent>
           </Card>
         </div>
-      </section>
+      </section> */}
     </main>
   );
 }

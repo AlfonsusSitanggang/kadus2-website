@@ -59,17 +59,14 @@ export default async function Post({ params }) {
       </nav>
 
       {/* Thumbnail */}
+      {/* Thumbnail */}
       {postData.thumbnail && (
-        <div className="mb-10 -mx-4 sm:mx-0">
-          <div className="relative h-[280px] w-full overflow-hidden shadow-lg sm:h-[380px] md:h-[460px] sm:rounded-2xl">
-            <img
-              src={postData.thumbnail}
-              alt={postData.title}
-              className="h-full w-full object-cover"
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-          </div>
+        <div className="mb-10">
+          <img
+            src={postData.thumbnail}
+            alt={postData.title}
+            className="w-full rounded-2xl shadow-lg"
+          />
         </div>
       )}
 
